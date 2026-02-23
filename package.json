@@ -1,0 +1,22 @@
+{
+  "name": "shop-tests-ts",
+  "version": "1.0.0",
+  "description": "E2E tests for shop-app (Playwright + TypeScript)",
+  "scripts": {
+    "test": "npx playwright test",
+    "test:api": "npx playwright test --project=api",
+    "test:ui": "npx playwright test --project=ui",
+    "test:headed": "npx playwright test --project=ui --headed",
+    "report": "npx playwright show-report",
+    "allure:generate": "npx allure generate allure-results -o allure-report --clean",
+    "allure:open": "npx allure open allure-report"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.49.0",
+    "allure-playwright": "^3.0.0",
+    "allure-js-commons": "^3.0.0",
+    "@faker-js/faker": "^9.3.0",
+    "dotenv": "^16.4.7",
+    "typescript": "^5.7.0"
+  }
+}
