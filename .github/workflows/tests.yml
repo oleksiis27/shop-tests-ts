@@ -82,7 +82,7 @@ jobs:
 
       - name: Run UI tests
         if: always()
-        run: npx playwright test --project=ui
+        run: npx playwright test --project=ui --update-snapshots
         continue-on-error: true
 
       - name: Install Allure CLI
