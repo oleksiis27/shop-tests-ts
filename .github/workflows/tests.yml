@@ -12,6 +12,10 @@ permissions:
   pages: write
   id-token: write
 
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -65,19 +69,40 @@ jobs:
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
 
+      - name: Download previous Allure history
+        continue-on-error: true
+        uses: actions/download-artifact@v4
+        with:
+          name: allure-history
+          path: allure-results/history
+
       - name: Run API tests
         run: npx playwright test --project=api
+        continue-on-error: true
 
       - name: Run UI tests
+        if: always()
         run: npx playwright test --project=ui
+        continue-on-error: true
+
+      - name: Install Allure CLI
+        if: always()
+        run: npm install -g allure-commandline
 
       - name: Generate Allure report
         if: always()
-        run: |
-          npm install -g allure-commandline
-          allure generate allure-results -o allure-report --clean
+        run: allure generate allure-results -o allure-report --clean
 
-      - name: Upload Allure report
+      - name: Save Allure history
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-history
+          path: allure-report/history
+          retention-days: 30
+          overwrite: true
+
+      - name: Upload Allure report to Pages
         if: always()
         uses: actions/upload-pages-artifact@v3
         with:
@@ -97,13 +122,13 @@ jobs:
 
   deploy-report:
     needs: test
-    if: always()
+    if: always() && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
 
     steps:
-      - name: Deploy to GitHub Pages
+      - name: Deploy Allure report to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4

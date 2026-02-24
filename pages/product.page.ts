@@ -9,7 +9,7 @@ export class ProductPage extends BasePage {
   get description() { return this.page.locator('p.text-gray-600'); }
   get quantityInput() { return this.page.locator("input[type='number']"); }
   get addToCartButton() { return this.page.getByRole('button', { name: 'Add to Cart' }); }
-  get successMessage() { return this.page.locator('p.text-green-600'); }
+  get successMessage() { return this.page.getByText('Added to cart!'); }
 
   async openPage(id: number) {
     await this.page.goto(`/products/${id}`);
